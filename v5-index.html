@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ratioc — AI that investigates, not just flags</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2064%2064'%3E%3Crect%20width%3D'64'%20height%3D'64'%20rx%3D'11'%20fill%3D'%231b232c'%2F%3E%3Ctext%20x%3D'32'%20y%3D'50.5'%20text-anchor%3D'middle'%20font-family%3D'Georgia%2Cserif'%20font-weight%3D'700'%20font-size%3D'54'%20fill%3D'%23cf8a52'%3ER%3C%2Ftext%3E%3C%2Fsvg%3E">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=Playfair+Display:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #11161c;
+    --bg-raised: #171e26;
+    --bg-card: #1b232c;
+    --border: #2a333d;
+    --text: #e9e5da;
+    --text-dim: #95a0ac;
+    --text-faint: #5e6873;
+    --accent: #cf8a52;
+    --accent-soft: rgba(207, 138, 82, 0.12);
+    --green: #7fae8a;
+    --serif: 'Source Serif 4', Georgia, serif;
+    --sans: 'IBM Plex Sans', -apple-system, sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  /* ---------- NAV ---------- */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(17, 22, 28, 0.92);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--border);
+  }
+  nav.wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 72px;
+  }
+  .logo {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 21px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--text);
+    text-decoration: none;
+  }
+  .logo span { color: var(--accent); }
+  .nav-cta {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    padding: 9px 18px;
+    border-radius: 4px;
+    transition: border-color 0.15s ease, color 0.15s ease;
+    white-space: nowrap;
+  }
+  .nav-cta:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .nav-cta:focus-visible, a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero {
+    padding: 96px 0 80px;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 64px;
+    align-items: start;
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+  }
+  h1 {
+    font-family: var(--serif);
+    font-size: 48px;
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    margin-bottom: 24px;
+  }
+  .lede {
+    font-size: 18px;
+    color: var(--text-dim);
+    max-width: 480px;
+    margin-bottom: 36px;
+  }
+  .cta-row {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    flex-wrap: wrap;
+  }
+  .btn-primary {
+    font-family: var(--mono);
+    font-size: 14px;
+    background: var(--accent);
+    color: #1b1208;
+    text-decoration: none;
+    padding: 13px 24px;
+    border-radius: 4px;
+    font-weight: 500;
+    transition: opacity 0.15s ease;
+  }
+  .btn-primary:hover { opacity: 0.85; }
+  .link-secondary {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--text-dim);
+    text-decoration: none;
+    border-bottom: 1px solid var(--text-faint);
+    padding-bottom: 2px;
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+  .link-secondary:hover { color: var(--text); border-color: var(--text); }
+
+  /* ---------- LEDGER CARD (signature element) ---------- */
+  .ledger {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .ledger-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 0.06em;
+  }
+  .ledger-head .seal {
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 3px 8px;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+  }
+  .ledger-row {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .ledger-row:last-child { border-bottom: none; }
+  .ledger-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-faint);
+  }
+  .ledger-id { color: var(--text-dim); }
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+  }
+  .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--green);
+    display: inline-block;
+  }
+  .dot.flag { background: var(--accent); }
+  .redaction-line {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .redaction {
+    height: 12px;
+    background: var(--text-faint);
+    opacity: 0.35;
+    border-radius: 2px;
+  }
+  .ledger-note {
+    font-size: 13px;
+    color: var(--text-dim);
+    font-family: var(--sans);
+  }
+  .ledger-hash {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-faint);
+    letter-spacing: 0.04em;
+  }
+
+  /* ---------- SECTIONS ---------- */
+  section {
+    padding: 80px 0;
+    border-top: 1px solid var(--border);
+  }
+  .section-head {
+    max-width: 640px;
+    margin-bottom: 48px;
+  }
+  h2 {
+    font-family: var(--serif);
+    font-size: 32px;
+    font-weight: 600;
+    line-height: 1.25;
+    margin-top: 12px;
+  }
+  .body-text {
+    font-size: 16px;
+    color: var(--text-dim);
+    max-width: 640px;
+  }
+  .body-text + .body-text { margin-top: 16px; }
+
+  /* Aside / policy citation */
+  .policy-note {
+    margin-top: 32px;
+    border-left: 2px solid var(--accent);
+    padding: 4px 0 4px 20px;
+    max-width: 560px;
+  }
+  .policy-note .ref {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+    display: block;
+    margin-bottom: 6px;
+  }
+  .policy-note p {
+    font-size: 14px;
+    color: var(--text-dim);
+  }
+
+  /* How it works */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+  }
+  .step {
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 28px 24px;
+  }
+  .step-num {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    margin-bottom: 16px;
+  }
+  .step h3 {
+    font-family: var(--serif);
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .step p {
+    font-size: 14px;
+    color: var(--text-dim);
+  }
+
+  /* Built for */
+  .segments {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .segment {
+    background: var(--bg);
+    padding: 28px 28px;
+  }
+  .segment h3 {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .segment p {
+    font-size: 14px;
+    color: var(--text-dim);
+  }
+
+  /* Deployment / spec sheet */
+  .deploy-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    align-items: center;
+  }
+  /* Contact section: top-align so the heading lines up with the form's first field */
+  #contact .deploy-grid {
+    align-items: start;
+  }
+  .spec-sheet {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 0;
+  }
+  .spec-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .spec-row:last-child { border-bottom: none; }
+  .spec-label {
+    font-family: var(--mono);
+    color: var(--text-faint);
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+  }
+  .spec-value {
+    color: var(--text);
+    text-align: right;
+  }
+
+  /* Contact / footer */
+  .contact {
+    text-align: center;
+  }
+
+  /* ---------- CONTACT FORM ---------- */
+  .contact-form {
+    width: 100%;
+    text-align: left;
+  }
+  .field {
+    margin-bottom: 16px;
+  }
+  .field label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 8px;
+  }
+  .field input,
+  .field textarea {
+    width: 100%;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 12px 14px;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 15px;
+    transition: border-color 0.15s ease;
+  }
+  .field input::placeholder,
+  .field textarea::placeholder { color: var(--text-faint); }
+  .field input:focus,
+  .field textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .field textarea { resize: vertical; min-height: 84px; }
+  .hp-field {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  .form-submit {
+    width: 100%;
+    font-family: var(--mono);
+    font-size: 14px;
+    background: var(--accent);
+    color: #1b1208;
+    border: none;
+    padding: 14px 24px;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+    margin-top: 4px;
+  }
+  .form-submit:hover { opacity: 0.85; }
+  .form-note {
+    font-family: var(--sans);
+    font-size: 12px;
+    color: var(--text-faint);
+    text-align: left;
+    margin-top: 18px;
+    line-height: 1.5;
+  }
+  .form-note a { color: var(--text-dim); text-decoration: underline; }
+  .form-status {
+    text-align: left;
+    font-size: 14px;
+    color: var(--green);
+    margin-top: 16px;
+    min-height: 20px;
+  }
+  .alt-contact {
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text-faint);
+    margin-top: 28px;
+  }
+  .alt-contact a { color: var(--accent); text-decoration: none; }
+  .alt-contact a:hover { text-decoration: underline; }
+  .contact .section-head {
+    margin: 0 auto 32px;
+    text-align: center;
+  }
+  .contact .eyebrow { text-align: center; }
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 28px 0;
+  }
+  .footer-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-faint);
+    flex-wrap: wrap;
+    gap: 16px 32px;
+  }
+  .footer-left {
+    display: flex;
+    align-items: center;
+    gap: 8px 16px;
+    flex-wrap: wrap;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-faint);
+  }
+  .footer-left .sep { color: var(--border); }
+  .footer-note {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-faint);
+    line-height: 1.6;
+    margin-top: 14px;
+    max-width: 560px;
+  }
+  .footer-row a,
+  .footer-left a {
+    color: var(--text-faint);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+  .footer-row a:hover,
+  .footer-left a:hover { color: var(--text-dim); }
+  @media (max-width: 640px) {
+    .footer-note { max-width: none; }
+  }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 860px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 48px; }
+    .steps { grid-template-columns: 1fr; }
+    .segments { grid-template-columns: 1fr; }
+    .deploy-grid { grid-template-columns: 1fr; gap: 32px; }
+    h1 { font-size: 36px; }
+    h2 { font-size: 26px; }
+  }
+  @media (max-width: 480px) {
+    .wrap { padding: 0 20px; }
+    h1 { font-size: 30px; }
+    .hero { padding: 64px 0 56px; }
+    section { padding: 56px 0; }
+  }
+</style>
+<link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
+<script src="https://assets.calendly.com/assets/external/widget.js" async></script>
+</head>
+<body>
+
+<header>
+  <nav class="wrap">
+    <a href="#top" class="logo">Ratio<span>c</span></a>
+    <a href="https://calendly.com/access-ratioc/30min" class="nav-cta" data-calendly="true" target="_blank" rel="noopener">Book a briefing</a>
+  </nav>
+</header>
+
+<main>
+
+  <!-- HERO -->
+  <section class="hero" style="border-top: none;">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="eyebrow">On-premise AI compliance</div>
+        <h1>AI that investigates, not just flags, and never leaves the building.</h1>
+        <p class="lede">
+          Ratioc reads communications, reasons through each case against your
+          policies, and produces signed evidence. It's built for compliance and
+          surveillance teams who can't send their data to a third-party model.
+        </p>
+        <div class="cta-row">
+          <a href="#contact" class="btn-primary">Start a conversation</a>
+          <a href="#how-it-works" class="link-secondary">How it works</a>
+        </div>
+      </div>
+
+      <div class="ledger" role="img" aria-label="Sample sealed evidence pack showing redacted case entries">
+        <div class="ledger-head">
+          <span>EVIDENCE PACK · CASE BATCH 0091</span>
+          <span class="seal">SEALED</span>
+        </div>
+
+        <div class="ledger-row">
+          <div class="ledger-top">
+            <span class="ledger-id">CASE-2026-0091</span>
+            <span class="status"><span class="dot flag"></span>FLAGGED</span>
+          </div>
+          <div class="redaction-line">
+            <div class="redaction" style="width:72px"></div>
+            <div class="redaction" style="width:48px"></div>
+            <span class="ledger-hash">— participants pseudonymised</span>
+          </div>
+          <div class="ledger-note">Conduct policy reference matched · confidence recorded</div>
+          <div class="ledger-hash">sha256: 8f3c1a…e02d</div>
+        </div>
+
+        <div class="ledger-row">
+          <div class="ledger-top">
+            <span class="ledger-id">CASE-2026-0088</span>
+            <span class="status"><span class="dot"></span>CLEARED</span>
+          </div>
+          <div class="redaction-line">
+            <div class="redaction" style="width:60px"></div>
+            <div class="redaction" style="width:90px"></div>
+            <span class="ledger-hash">— participants pseudonymised</span>
+          </div>
+          <div class="ledger-note">No policy match · reviewed and closed</div>
+          <div class="ledger-hash">sha256: 2b71fa…9c4e</div>
+        </div>
+
+        <div class="ledger-row">
+          <div class="ledger-top">
+            <span class="ledger-id">CASE-2026-0087</span>
+            <span class="status"><span class="dot flag"></span>FLAGGED</span>
+          </div>
+          <div class="redaction-line">
+            <div class="redaction" style="width:54px"></div>
+            <div class="redaction" style="width:36px"></div>
+            <div class="redaction" style="width:64px"></div>
+            <span class="ledger-hash">— participants pseudonymised</span>
+          </div>
+          <div class="ledger-note">Escalated for reveal approval · awaiting compliance sign-off</div>
+          <div class="ledger-hash">sha256: 6d40c8…117a</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE PROBLEM -->
+  <section id="problem">
+    <div class="wrap deploy-grid">
+      <div>
+        <div class="eyebrow">The problem</div>
+        <h2>Every other AI compliance tool asks for your data first.</h2>
+        <p class="body-text" style="margin-top: 24px;">
+          Trading floor chat, voice transcripts, internal email. This is the most
+          sensitive data your firm holds, and most surveillance AI wants it sent
+          to a shared cloud model before you can even run an evaluation. For a
+          fund operating under market abuse rules, conduct regimes, or
+          LP-mandated data residency clauses, that question goes well past
+          procurement. It reaches the board, and it usually ends the conversation
+          before it starts.
+        </p>
+        <p class="body-text">
+          We built Ratioc the other way round. The model, the data, and the
+          evidence all stay inside your perimeter, from the first message
+          ingested to the final sealed pack.
+        </p>
+      </div>
+      <div class="spec-sheet">
+        <div class="spec-row">
+          <span class="spec-label">MARKET ABUSE</span>
+          <span class="spec-value">Communications must be surveilled &amp; retained</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">CONDUCT REGIMES</span>
+          <span class="spec-value">Named senior managers personally accountable</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">DATA RESIDENCY</span>
+          <span class="spec-value">LP &amp; sovereignty clauses restrict where data lives</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">THIRD-PARTY AI</span>
+          <span class="spec-value">Often blocked without lengthy legal review</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how-it-works">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">How it works</div>
+        <h2>Three steps, one perimeter.</h2>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">01 — INGEST &amp; PROTECT</div>
+          <h3>Identities are protected first</h3>
+          <p>
+            Every message is pseudonymised the moment it arrives. Analysts work
+            with anonymised conversations; only an approved reveal workflow can
+            re-identify a person, and every reveal is logged.
+          </p>
+        </div>
+        <div class="step">
+          <div class="step-num">02 — REASON</div>
+          <h3>Reasoning grounded in your policies</h3>
+          <p>
+            A self-hosted language model checks each flagged conversation
+            against your actual policy library. What comes back is a structured
+            decision — the allegation, the reasoning, the policy it relied on,
+            and a confidence score. Not a wall of prose.
+          </p>
+        </div>
+        <div class="step">
+          <div class="step-num">03 — EVIDENCE</div>
+          <h3>Sealed and ready for audit</h3>
+          <p>
+            When a case is closed, its findings, signals, and policy references
+            are frozen into a signed evidence pack. It's ready for internal
+            review, an audit, or a regulator request.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BUILT FOR -->
+  <section id="built-for">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">Built for</div>
+        <h2>Firms where the data can't leave.</h2>
+      </div>
+      <div class="segments">
+        <div class="segment">
+          <h3>Trading Firms</h3>
+          <p>
+            Communications surveillance across chat, email, and voice, without
+            sending trader conversations to a third party.
+          </p>
+        </div>
+        <div class="segment">
+          <h3>Sovereign Wealth Funds</h3>
+          <p>
+            AI-assisted compliance reasoning that meets sovereignty and
+            national-security data requirements without carve-outs or exceptions.
+          </p>
+        </div>
+        <div class="segment">
+          <h3>Head of Surveillance</h3>
+          <p>
+            An additional layer of AI-assisted review on top of existing
+            surveillance tooling, deployed inside your own data centre.
+          </p>
+        </div>
+        <div class="segment">
+          <h3>Lean Compliance Teams</h3>
+          <p>
+            Audit-ready evidence for conduct and market-abuse obligations, sized
+            for a compliance team without a dedicated surveillance desk.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEPLOYMENT -->
+  <section id="deployment">
+    <div class="wrap deploy-grid">
+      <div>
+        <div class="eyebrow">Deployment</div>
+        <h2>Your hardware. Your model. Your evidence.</h2>
+        <p class="body-text" style="margin-top: 24px;">
+          Ratioc runs on dedicated infrastructure inside your environment. There's
+          no shared cloud tenant and no multi-tenant SaaS instance. The reasoning
+          model is self-hosted, so nothing depends on a third-party AI provider
+          and there's no path for trading communications to leave your network.
+        </p>
+        <p class="body-text">
+          You get the reasoning quality of a modern large language model, with the
+          data governance posture of software you run yourself.
+        </p>
+      </div>
+      <div class="spec-sheet">
+        <div class="spec-row">
+          <span class="spec-label">INFERENCE</span>
+          <span class="spec-value">On-premise GPU infrastructure</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">MODEL</span>
+          <span class="spec-value">Self-hosted, large language model</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">DATA RESIDENCY</span>
+          <span class="spec-value">100% client infrastructure</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">OUTBOUND AI CALLS</span>
+          <span class="spec-value">None</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">IDENTITY ACCESS</span>
+          <span class="spec-value">Role-gated, logged, reversible</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">EVIDENCE OUTPUT</span>
+          <span class="spec-value">Signed, exportable packs</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEAM -->
+  <section id="team">
+    <div class="wrap deploy-grid">
+      <div>
+        <div class="eyebrow">Who we are</div>
+        <h2>We've sat where your team sits.</h2>
+        <p class="body-text" style="margin-top: 24px;">
+          Ratioc's founders spent years inside the security and risk function of
+          a global investment bank, on the team that turns thousands of weekly
+          alerts into a small number of cases someone can actually act on —
+          under audit, under deadline, under scrutiny. We know the distance
+          between "the system flagged it" and "here is a defensible case file,"
+          because closing that distance was our job.
+        </p>
+      </div>
+      <div class="spec-sheet">
+        <div class="spec-row">
+          <span class="spec-label">BACKGROUND</span>
+          <span class="spec-value">Security &amp; risk, tier-1 investment bank</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">COMBINED EXPERIENCE</span>
+          <span class="spec-value">8+ years</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">TRACK RECORD</span>
+          <span class="spec-value">Proven AI triage automation</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">FOUNDING TEAM</span>
+          <span class="spec-value">2 — engineering-led</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">BASED IN</span>
+          <span class="spec-value">London, UK</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="wrap deploy-grid">
+      <div>
+        <div class="eyebrow">Design partner programme</div>
+        <h2>We're working with a small number of firms ahead of a wider release.</h2>
+        <p class="body-text" style="margin-top: 24px;">
+          If your compliance or surveillance team is evaluating AI tooling and
+          data residency isn't negotiable, we'd like to talk. It's under NDA, on
+          your terms, and there's no commercial obligation to start.
+        </p>
+        <p class="body-text" style="margin-top: 16px;">
+          This page stays general on purpose. Once we're under NDA, we walk design
+          partners through the full architecture, the deployment model, and how it
+          would run inside your environment.
+        </p>
+        <p class="alt-contact" style="text-align: left; margin-top: 28px;">
+          Prefer email? <a href="mailto:access@ratioc.ai">access@ratioc.ai</a>
+        </p>
+      </div>
+
+      <!--
+        This form posts to a Google Apps Script web app, which writes each
+        submission as a row in the linked "Ratioc — Design Partner Leads" Sheet.
+        To change the destination, replace the action URL with a new /exec
+        deployment URL.
+      -->
+      <form class="contact-form" action="https://script.google.com/macros/s/AKfycbz6MLnHd-vjUmaTxcqafe_ZqLFzt4ldxxHA--I2lGrNOuOx6ZUDc1VkmqjQ3hwBDmPntw/exec" method="POST">
+        <div class="field">
+          <label for="cf-name">Name</label>
+          <input type="text" id="cf-name" name="name" placeholder="Your name" required>
+        </div>
+        <div class="field">
+          <label for="cf-email">Work email</label>
+          <input type="email" id="cf-email" name="email" placeholder="you@firm.com" required>
+        </div>
+        <div class="field">
+          <label for="cf-message">Anything you'd like us to know <span style="text-transform:none;letter-spacing:0;">(optional)</span></label>
+          <textarea id="cf-message" name="message" placeholder="Your firm, what you're evaluating, or a question"></textarea>
+        </div>
+        <!-- Honeypot: hidden from humans, bots tend to fill it. Real submissions leave it empty. -->
+        <div class="hp-field" aria-hidden="true">
+          <label for="cf-company-website">Company website</label>
+          <input type="text" id="cf-company-website" name="company_website" tabindex="-1" autocomplete="off">
+        </div>
+        <button type="submit" class="form-submit">Enquire about the programme</button>
+        <div class="form-status" id="cf-status" role="status" aria-live="polite"></div>
+        <p class="form-note">
+          We'll only use your details to respond to your enquiry. Nothing is shared
+          with third parties. See our <a href="#privacy">privacy note</a>.
+        </p>
+      </form>
+    </div>
+  </section>
+
+  <!-- PRIVACY NOTE -->
+  <section id="privacy" style="padding: 56px 0;">
+    <div class="wrap">
+      <div class="eyebrow" style="margin-bottom: 16px;">Privacy</div>
+      <p class="body-text" style="font-size: 14px; max-width: 920px;">
+        When you contact us through this site, we collect your name, email
+        address, and any message you choose to send, solely to respond to your
+        enquiry and discuss the design partner programme. We do not sell or share
+        this information with third parties, and we do not use it for marketing
+        unrelated to your enquiry. You can ask us to delete your details at any
+        time by emailing <a href="mailto:access@ratioc.ai" style="color:var(--accent);text-decoration:none;">access@ratioc.ai</a>.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-left">
+      <span>ratioc.ai</span>
+      <span class="sep">·</span>
+      <span>London, UK</span>
+      <span class="sep">·</span>
+      <a href="mailto:access@ratioc.ai">access@ratioc.ai</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Open Calendly in a popup overlay when the widget is available; otherwise
+  // fall through to opening the booking page directly (the href).
+  document.addEventListener('click', function (e) {
+    var cal = e.target.closest('a[data-calendly="true"]');
+    if (!cal) return;
+    if (window.Calendly && typeof window.Calendly.initPopupWidget === 'function') {
+      e.preventDefault();
+      window.Calendly.initPopupWidget({ url: cal.getAttribute('href') });
+    }
+    // If Calendly hasn't loaded, do nothing special — the link opens normally.
+  });
+
+  // Handle in-page anchor links: scroll within the page rather than letting
+  // the click navigate (which can break inside sandboxed preview frames).
+  document.addEventListener('click', function (e) {
+    var link = e.target.closest('a[href^="#"]');
+    if (!link) return;
+    var hash = link.getAttribute('href');
+    e.preventDefault();
+    if (hash === '#top' || hash === '#') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    var target = document.querySelector(hash);
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+
+  // Contact form: posts to a Google Apps Script web app and keeps the visitor
+  // on the page. Apps Script doesn't return CORS headers, so we send a "simple"
+  // request (no custom headers, no preflight) and treat completion as success.
+  var form = document.querySelector('.contact-form');
+  var formLoadTime = Date.now();
+  if (form) {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      // Spam check 1 — honeypot: if the hidden field is filled, it's a bot.
+      // Silently pretend success so the bot doesn't retry, but send nothing.
+      var hp = form.querySelector('[name="company_website"]');
+      if (hp && hp.value.trim() !== '') {
+        form.reset();
+        showStatus('Thank you — we\u2019ll be in touch shortly.', true);
+        return;
+      }
+
+      // Spam check 2 — timing: humans take a few seconds; bots submit instantly.
+      if (Date.now() - formLoadTime < 3000) {
+        showStatus('Please take a moment to complete the form.', false);
+        return;
+      }
+
+      var endpoint = form.getAttribute('action');
+      if (!endpoint || endpoint.indexOf('PASTE_YOUR_FORM_ENDPOINT') !== -1) {
+        showStatus('Form not yet connected — email access@ratioc.ai for now.', false);
+        return;
+      }
+      var btn = form.querySelector('.form-submit');
+      var original = btn.textContent;
+      btn.textContent = 'Sending…';
+      btn.disabled = true;
+
+      fetch(endpoint, {
+        method: 'POST',
+        body: new FormData(form),
+        mode: 'no-cors'
+      }).then(function () {
+        // With no-cors the response is opaque (can't be read), but a resolved
+        // promise means the request reached Apps Script and the row was written.
+        form.reset();
+        showStatus('Thank you — we\u2019ll be in touch shortly.', true);
+      }).catch(function () {
+        showStatus('Something went wrong. Please email access@ratioc.ai.', false);
+      }).finally(function () {
+        btn.textContent = original;
+        btn.disabled = false;
+      });
+    });
+  }
+
+  function showStatus(msg, ok) {
+    var el = document.getElementById('cf-status');
+    if (!el) return;
+    el.textContent = msg;
+    el.style.color = ok ? 'var(--green)' : 'var(--accent)';
+  }
+</script>
+
+</body>
+</html>
