@@ -529,13 +529,14 @@
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
 </script>
 <script defer src="/_vercel/insights/script.js"></script>
+<script defer src="https://cloud.umami.is/script.js" data-website-id="31a4c4f1-5afd-4212-bb30-a5aebd14c390"></script>
 </head>
 <body>
 
 <header>
   <nav class="wrap">
     <a href="#top" class="logo">Ratio<span>c</span></a>
-    <a href="https://calendly.com/access-ratioc/30min" class="nav-cta" data-calendly="true" target="_blank" rel="noopener">Book a briefing</a>
+    <a href="https://calendly.com/access-ratioc/30min" class="nav-cta" data-calendly="true" data-umami-event="book-briefing" target="_blank" rel="noopener">Book a briefing</a>
   </nav>
 </header>
 
@@ -553,7 +554,7 @@
           surveillance teams who can't send their data to a third-party model.
         </p>
         <div class="cta-row">
-          <a href="#contact" class="btn-primary">Start a conversation</a>
+          <a href="#contact" class="btn-primary" data-umami-event="hero-cta">Start a conversation</a>
           <a href="#how-it-works" class="link-secondary">How it works</a>
         </div>
       </div>
@@ -835,7 +836,7 @@
           would run inside your environment.
         </p>
         <p class="alt-contact" style="text-align: left; margin-top: 28px;">
-          Prefer email? <a href="mailto:access@ratioc.ai">access@ratioc.ai</a>
+          Prefer email? <a href="mailto:access@ratioc.ai" data-umami-event="email-click">access@ratioc.ai</a>
         </p>
       </div>
 
@@ -883,7 +884,7 @@
         enquiry and discuss the design partner programme. We do not sell or share
         this information with third parties, and we do not use it for marketing
         unrelated to your enquiry. You can ask us to delete your details at any
-        time by emailing <a href="mailto:access@ratioc.ai" style="color:var(--accent);text-decoration:none;">access@ratioc.ai</a>.
+        time by emailing <a href="mailto:access@ratioc.ai" data-umami-event="email-click" style="color:var(--accent);text-decoration:none;">access@ratioc.ai</a>.
       </p>
     </div>
   </section>
@@ -897,7 +898,7 @@
       <span class="sep">·</span>
       <span>London, UK</span>
       <span class="sep">·</span>
-      <a href="mailto:access@ratioc.ai">access@ratioc.ai</a>
+      <a href="mailto:access@ratioc.ai" data-umami-event="email-click">access@ratioc.ai</a>
     </div>
   </div>
 </footer>
@@ -975,6 +976,9 @@
         // promise means the request reached Apps Script and the row was written.
         form.reset();
         showStatus('Thank you — we\u2019ll be in touch shortly.', true);
+        if (window.umami && typeof window.umami.track === 'function') {
+          window.umami.track('contact-form-submit');
+        }
       }).catch(function () {
         showStatus('Something went wrong. Please email access@ratioc.ai.', false);
       }).finally(function () {
