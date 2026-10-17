@@ -184,16 +184,6 @@
     align-items: center;
     gap: 14px;
   }
-  .lang-toggle {
-    font-family: 'IBM Plex Sans Arabic', var(--sans);
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text-dim);
-    text-decoration: none;
-    padding: 6px 4px;
-    transition: color 0.15s ease;
-  }
-  .lang-toggle:hover { color: var(--accent); }
   .nav-cta:focus-visible, a:focus-visible, button:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
@@ -631,6 +621,103 @@
     .hero { padding: 64px 0 56px; }
     section { padding: 56px 0; }
   }
+
+  /* ---------- SECTION MENU (collapsible dropdown, all screen sizes) ---------- */
+  nav.wrap { position: relative; }
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    inset-inline-end: 32px;
+    width: 264px;
+    max-width: calc(100% - 40px);
+    padding: 6px 20px;
+    list-style: none;
+    background: #11161c;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  }
+  header.menu-open .nav-links { display: block; }
+  .nav-links a {
+    display: block;
+    padding: 13px 0;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-links li + li a { border-top: 1px solid var(--border); }
+  .nav-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 36px;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+  }
+  .nav-toggle:hover { border-color: var(--accent); }
+  .nav-toggle .ico-close { display: none; }
+  header.menu-open .nav-toggle .ico-open { display: none; }
+  header.menu-open .nav-toggle .ico-close { display: block; }
+  @media (max-width: 480px) {
+    .nav-links { inset-inline-end: 20px; }
+  }
+
+  /* ---------- ARABIC VERSION PROMPT ---------- */
+  .lang-prompt {
+    position: fixed;
+    z-index: 20;
+    bottom: max(16px, env(safe-area-inset-bottom));
+    inset-inline: 16px;
+    margin-inline: auto;
+    width: min(560px, calc(100% - 32px));
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px 16px;
+    padding: 14px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  }
+  .lp-text { display: flex; flex-direction: column; gap: 2px; margin: 0; }
+  .lp-ar { font-family: 'IBM Plex Sans Arabic', var(--sans); font-weight: 500; font-size: 15px; line-height: 1.7; color: var(--text); }
+  .lp-en { font-size: 12px; color: var(--text-dim); }
+  .lp-actions { display: flex; align-items: center; gap: 14px; }
+  .lp-go {
+    font-family: 'IBM Plex Sans Arabic', var(--sans);
+    font-weight: 500;
+    font-size: 14px;
+    background: var(--accent);
+    color: #1b1208;
+    text-decoration: none;
+    padding: 8px 18px;
+    border-radius: 4px;
+    transition: opacity 0.15s ease;
+  }
+  .lp-go:hover { opacity: 0.85; }
+  .lp-stay {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-dim);
+    background: none;
+    border: none;
+    border-bottom: 1px solid #838e9a;
+    padding: 0 0 2px;
+    cursor: pointer;
+    transition: color 0.15s ease;
+  }
+  .lp-stay:hover { color: var(--text); }
 </style>
 <script>
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
@@ -641,11 +728,21 @@
 <body>
 
 <header>
-  <nav class="wrap">
+  <nav class="wrap" aria-label="Primary">
     <a href="#top" class="logo">Ratio<span>c</span></a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="#how-it-works" data-umami-event="nav-click" data-umami-event-target="how-it-works">How it works</a></li>
+      <li><a href="#built-for" data-umami-event="nav-click" data-umami-event-target="built-for">Built for</a></li>
+      <li><a href="#deployment" data-umami-event="nav-click" data-umami-event-target="deployment">Deployment</a></li>
+      <li><a href="#team" data-umami-event="nav-click" data-umami-event-target="team">Who we are</a></li>
+      <li><a href="#contact" data-umami-event="nav-click" data-umami-event-target="contact">Contact</a></li>
+    </ul>
     <div class="nav-actions">
-      <a href="/ar/" class="lang-toggle" lang="ar" hreflang="ar" data-umami-event="lang-toggle" data-umami-event-lang="ar">العربية</a>
       <a href="https://calendly.com/access-ratioc/30min" class="nav-cta" data-calendly="true" data-umami-event="book-briefing" target="_blank" rel="noopener">Book a briefing</a>
+      <button type="button" class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="nav-links">
+        <svg class="ico-open" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14"/></svg>
+        <svg class="ico-close" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"/></svg>
+      </button>
     </div>
   </nav>
 </header>
@@ -993,7 +1090,7 @@
     <div class="wrap">
       <div class="eyebrow" style="margin-bottom: 16px;">Privacy</div>
       <p class="body-text" style="font-size: 14px; max-width: 920px;">
-        When you contact us through this site, we collect your name, email address, and any message you choose to send, solely to respond to your enquiry and discuss the design partner programme. We do not sell this information or use it for marketing unrelated to your enquiry. To run the site and handle enquiries we use a small number of service providers that process data on our behalf: Google (Apps Script and Sheets, which receive and store enquiries), Vercel (hosting and site analytics), Umami (site analytics) and, if you choose to book a briefing, Calendly (which handles the details you enter there under its own privacy policy). You can ask us to delete your details at any time by emailing <a href="mailto:access@ratioc.ai" data-umami-event="email-click" style="color:var(--accent);text-decoration:none;">access@ratioc.ai</a>.
+        When you contact us through this site, we collect your name, email address, and any message you choose to send, solely to respond to your enquiry and discuss the design partner programme. We do not sell this information or use it for marketing unrelated to your enquiry. To run the site and handle enquiries we use a small number of service providers that process data on our behalf: Google (Apps Script and Sheets, which receive and store enquiries), Vercel (hosting and site analytics), Umami (site analytics) and, if you choose to book a briefing, Calendly (which handles the details you enter there under its own privacy policy). We may offer you the Arabic version of this site based on your browser language or approximate location; your approximate country is derived by our hosting provider from your IP address as the page loads, and we do not store it. You can ask us to delete your details at any time by emailing <a href="mailto:access@ratioc.ai" data-umami-event="email-click" style="color:var(--accent);text-decoration:none;">access@ratioc.ai</a>.
       </p>
     </div>
   </section>
@@ -1012,6 +1109,8 @@
       <a href="https://www.linkedin.com/company/ratiocai/" target="_blank" rel="noopener" data-umami-event="social-click" data-umami-event-network="linkedin">LinkedIn</a>
       <span class="sep">·</span>
       <a href="https://x.com/ratioc_ai" target="_blank" rel="noopener" data-umami-event="social-click" data-umami-event-network="x">X</a>
+      <span class="sep">·</span>
+      <a href="/ar/" lang="ar" hreflang="ar" data-umami-event="lang-toggle" data-umami-event-lang="ar" data-umami-event-location="footer" style="font-family:'IBM Plex Sans Arabic',var(--sans);font-weight:500;">العربية</a>
     </div>
   </div>
 </footer>
@@ -1076,6 +1175,29 @@
     }
   });
 
+  // Section menu (collapsible dropdown).
+  var siteHeader = document.querySelector('header');
+  var menuButton = document.querySelector('.nav-toggle');
+  function setMenu(open) {
+    if (!siteHeader || !menuButton) return;
+    siteHeader.classList.toggle('menu-open', open);
+    menuButton.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+  if (menuButton) {
+    menuButton.addEventListener('click', function () {
+      setMenu(!siteHeader.classList.contains('menu-open'));
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && siteHeader.classList.contains('menu-open')) {
+        setMenu(false);
+        menuButton.focus();
+      }
+    });
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('header') || e.target.closest('.nav-links a')) setMenu(false);
+    });
+  }
+
   // Contact form: posts to a Google Apps Script web app and keeps the visitor
   // on the page. Apps Script doesn't return CORS headers, so we send a "simple"
   // request (no custom headers, no preflight) and treat completion as success.
@@ -1137,6 +1259,99 @@
     el.textContent = msg;
     el.style.color = ok ? 'var(--green)' : 'var(--accent)';
   }
+</script>
+
+<script id="lang-prompt-script">
+  // Offers the Arabic version to visitors who are likely to want it: their
+  // browser prefers Arabic, or Vercel reports a GCC country for the request.
+  // It never redirects, remembers the visitor's choice, and uses no cookies.
+  (function () {
+    var KEY = 'ratioc.lang.choice';
+    var GCC = ['SA', 'AE', 'QA', 'KW', 'BH', 'OM'];
+    var force = /[?&]arprompt=1(&|$)/.test(location.search); // for testing the prompt
+
+    function stored() { try { return localStorage.getItem(KEY); } catch (e) { return null; } }
+    function store(v) { try { localStorage.setItem(KEY, v); } catch (e) {} }
+    function track(name, data) {
+      function send() { if (window.umami && typeof window.umami.track === 'function') window.umami.track(name, data); }
+      if (document.readyState === 'complete') send(); else window.addEventListener('load', send);
+    }
+
+    // Any use of a language link counts as a choice, so the prompt stays away afterwards.
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest('a[hreflang]');
+      if (a) store(a.getAttribute('hreflang'));
+    });
+
+    if (!force && stored()) return;
+
+    var langs = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || ''];
+    var arabicBrowser = langs.some(function (l) { return /^ar(-|$)/i.test(l); });
+
+    function show(reason) {
+      if (document.querySelector('.lang-prompt')) return;
+      var box = document.createElement('div');
+      box.className = 'lang-prompt';
+      box.setAttribute('role', 'region');
+      box.setAttribute('aria-label', 'Language suggestion');
+      box.lang = 'ar';
+      box.dir = 'rtl';
+
+      var text = document.createElement('p');
+      text.className = 'lp-text';
+      var ar = document.createElement('span');
+      ar.className = 'lp-ar';
+      ar.textContent = 'هل تفضّلون الاطلاع على الموقع بالعربية؟';
+      var en = document.createElement('span');
+      en.className = 'lp-en';
+      en.lang = 'en';
+      en.dir = 'ltr';
+      en.textContent = 'View this site in Arabic?';
+      text.appendChild(ar);
+      text.appendChild(en);
+
+      var actions = document.createElement('div');
+      actions.className = 'lp-actions';
+      var go = document.createElement('a');
+      go.className = 'lp-go';
+      go.href = '/ar/';
+      go.lang = 'ar';
+      go.hreflang = 'ar';
+      go.textContent = 'العربية';
+      go.setAttribute('data-umami-event', 'lang-prompt-accept');
+      go.setAttribute('data-umami-event-reason', reason);
+      var stay = document.createElement('button');
+      stay.type = 'button';
+      stay.className = 'lp-stay';
+      stay.lang = 'en';
+      stay.dir = 'ltr';
+      stay.textContent = 'Stay in English';
+      actions.appendChild(go);
+      actions.appendChild(stay);
+
+      box.appendChild(text);
+      box.appendChild(actions);
+      document.body.appendChild(box);
+      track('lang-prompt-shown', { reason: reason });
+
+      function dismiss() {
+        store('en');
+        track('lang-prompt-dismiss', { reason: reason });
+        if (box.parentNode) box.parentNode.removeChild(box);
+      }
+      stay.addEventListener('click', dismiss);
+    }
+
+    if (force || arabicBrowser) {
+      show(force ? 'forced' : 'browser');
+      return;
+    }
+    // Otherwise ask the edge which country the request came from (GCC visitors with English browsers).
+    fetch('/api/geo', { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) { if (d && GCC.indexOf(d.country) !== -1) show('country'); })
+      .catch(function () {});
+  })();
 </script>
 
 </body>

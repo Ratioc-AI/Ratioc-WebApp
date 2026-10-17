@@ -201,16 +201,6 @@
     align-items: center;
     gap: 14px;
   }
-  .lang-toggle {
-    font-family: 'IBM Plex Sans Arabic', var(--sans);
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text-dim);
-    text-decoration: none;
-    padding: 6px 4px;
-    transition: color 0.15s ease;
-  }
-  .lang-toggle:hover { color: var(--accent); }
   .nav-cta:focus-visible, a:focus-visible, button:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
@@ -649,6 +639,56 @@
     section { padding: 56px 0; }
   }
 
+
+  /* ---------- SECTION MENU (collapsible dropdown, all screen sizes) ---------- */
+  nav.wrap { position: relative; }
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    inset-inline-end: 32px;
+    width: 264px;
+    max-width: calc(100% - 40px);
+    padding: 6px 20px;
+    list-style: none;
+    background: #11161c;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  }
+  header.menu-open .nav-links { display: block; }
+  .nav-links a {
+    display: block;
+    padding: 13px 0;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-links li + li a { border-top: 1px solid var(--border); }
+  .nav-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 36px;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+  }
+  .nav-toggle:hover { border-color: var(--accent); }
+  .nav-toggle .ico-close { display: none; }
+  header.menu-open .nav-toggle .ico-open { display: none; }
+  header.menu-open .nav-toggle .ico-close { display: block; }
+  @media (max-width: 480px) {
+    .nav-links { inset-inline-end: 20px; }
+  }
+
   /* ---------- ARABIC / RTL OVERRIDES ---------- */
   :root {
     --serif: 'IBM Plex Sans Arabic', 'Source Serif 4', Georgia, serif;
@@ -682,7 +722,6 @@
   .ledger-head .seal { font-size: 12px; }
   .nav-cta { font-size: 14px; }
   .btn-primary, .link-secondary, .form-submit { font-size: 15px; }
-  .lang-toggle { font-family: var(--sans); font-size: 15px; letter-spacing: 0; }
 
   /* Elements holding Arabic text use the Arabic face, so word spaces are not
      taken from the monospace font. Latin IDs and hashes stay monospace. */
@@ -708,8 +747,10 @@
   @media (max-width: 480px) {
     h1 { font-size: 32px; }
     .nav-cta { font-size: 13px; }
-    .lang-toggle { font-size: 14px; }
   }
+
+  /* Section menu: Arabic type */
+  .nav-links a { font-family: var(--sans); font-size: 14px; letter-spacing: 0; }
 </style>
 <script>
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
@@ -720,11 +761,21 @@
 <body>
 
 <header>
-  <nav class="wrap">
+  <nav class="wrap" aria-label="التنقل الرئيسي">
     <a href="#top" class="logo" dir="ltr">Ratio<span>c</span></a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="#how-it-works" data-umami-event="nav-click" data-umami-event-target="how-it-works">كيف يعمل</a></li>
+      <li><a href="#built-for" data-umami-event="nav-click" data-umami-event-target="built-for">لمن صُمّم</a></li>
+      <li><a href="#deployment" data-umami-event="nav-click" data-umami-event-target="deployment">النشر</a></li>
+      <li><a href="#team" data-umami-event="nav-click" data-umami-event-target="team">من نحن</a></li>
+      <li><a href="#contact" data-umami-event="nav-click" data-umami-event-target="contact">تواصل معنا</a></li>
+    </ul>
     <div class="nav-actions">
-      <a href="/" class="lang-toggle" lang="en" hreflang="en" data-umami-event="lang-toggle" data-umami-event-lang="en">English</a>
       <a href="https://calendly.com/access-ratioc/30min" class="nav-cta" data-calendly="true" data-umami-event="book-briefing" target="_blank" rel="noopener">احجز جلسة تعريفية</a>
+      <button type="button" class="nav-toggle" aria-label="القائمة" aria-expanded="false" aria-controls="nav-links">
+        <svg class="ico-open" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14"/></svg>
+        <svg class="ico-close" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"/></svg>
+      </button>
     </div>
   </nav>
 </header>
@@ -1038,7 +1089,7 @@
     <div class="wrap">
       <div class="eyebrow" style="margin-bottom: 16px;">الخصوصية</div>
       <p class="body-text" style="font-size: 14px; max-width: 920px;">
-        عند التواصل معنا عبر هذا الموقع، نجمع اسمكم وبريدكم الإلكتروني وأي رسالة تختارون إرسالها، وذلك فقط للرد على استفساركم ومناقشة برنامج شركاء التصميم. نحن لا نبيع هذه المعلومات ولا نستخدمها لأغراض تسويقية لا صلة لها باستفساركم. ولتشغيل الموقع ومعالجة الاستفسارات نستعين بعدد محدود من مزوّدي الخدمة الذين يعالجون البيانات نيابةً عنا: Google (تطبيقات Apps Script وجداول Sheets التي تستقبل الاستفسارات وتخزّنها)، وVercel (الاستضافة وتحليلات الموقع)، وUmami (تحليلات الموقع)، وCalendly إذا اخترتم حجز جلسة تعريفية (وهي تعالج البيانات التي تدخلونها هناك وفق سياسة الخصوصية الخاصة بها). يمكنكم طلب حذف بياناتكم في أي وقت بمراسلتنا على <bdi><a href="mailto:access@ratioc.ai" data-umami-event="email-click" style="color:var(--accent);text-decoration:none;">access@ratioc.ai</a></bdi>. في حال وجود أي تعارض بين النسختين العربية والإنجليزية، تسود النسخة الإنجليزية.
+        عند التواصل معنا عبر هذا الموقع، نجمع اسمكم وبريدكم الإلكتروني وأي رسالة تختارون إرسالها، وذلك فقط للرد على استفساركم ومناقشة برنامج شركاء التصميم. نحن لا نبيع هذه المعلومات ولا نستخدمها لأغراض تسويقية لا صلة لها باستفساركم. ولتشغيل الموقع ومعالجة الاستفسارات نستعين بعدد محدود من مزوّدي الخدمة الذين يعالجون البيانات نيابةً عنا: Google (تطبيقات Apps Script وجداول Sheets التي تستقبل الاستفسارات وتخزّنها)، وVercel (الاستضافة وتحليلات الموقع)، وUmami (تحليلات الموقع)، وCalendly إذا اخترتم حجز جلسة تعريفية (وهي تعالج البيانات التي تدخلونها هناك وفق سياسة الخصوصية الخاصة بها). وقد نعرض عليكم النسخة العربية من الموقع بحسب لغة المتصفح أو الموقع التقريبي؛ ويستنتج مزوّد الاستضافة بلدكم التقريبي من عنوان IP عند تحميل الصفحة، ولا نحتفظ به. يمكنكم طلب حذف بياناتكم في أي وقت بمراسلتنا على <bdi><a href="mailto:access@ratioc.ai" data-umami-event="email-click" style="color:var(--accent);text-decoration:none;">access@ratioc.ai</a></bdi>. في حال وجود أي تعارض بين النسختين العربية والإنجليزية، تسود النسخة الإنجليزية.
       </p>
     </div>
   </section>
@@ -1057,6 +1108,8 @@
       <a href="https://www.linkedin.com/company/ratiocai/" target="_blank" rel="noopener" data-umami-event="social-click" data-umami-event-network="linkedin">LinkedIn</a>
       <span class="sep">·</span>
       <a href="https://x.com/ratioc_ai" target="_blank" rel="noopener" data-umami-event="social-click" data-umami-event-network="x">X</a>
+      <span class="sep">·</span>
+      <a href="/" lang="en" hreflang="en" data-umami-event="lang-toggle" data-umami-event-lang="en" data-umami-event-location="footer">English</a>
     </div>
   </div>
 </footer>
@@ -1121,6 +1174,29 @@
     }
   });
 
+  // Section menu (collapsible dropdown).
+  var siteHeader = document.querySelector('header');
+  var menuButton = document.querySelector('.nav-toggle');
+  function setMenu(open) {
+    if (!siteHeader || !menuButton) return;
+    siteHeader.classList.toggle('menu-open', open);
+    menuButton.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+  if (menuButton) {
+    menuButton.addEventListener('click', function () {
+      setMenu(!siteHeader.classList.contains('menu-open'));
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && siteHeader.classList.contains('menu-open')) {
+        setMenu(false);
+        menuButton.focus();
+      }
+    });
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('header') || e.target.closest('.nav-links a')) setMenu(false);
+    });
+  }
+
   // Contact form: posts to a Google Apps Script web app and keeps the visitor
   // on the page. Apps Script doesn't return CORS headers, so we send a "simple"
   // request (no custom headers, no preflight) and treat completion as success.
@@ -1182,6 +1258,15 @@
     el.textContent = msg;
     el.style.color = ok ? 'var(--green)' : 'var(--accent)';
   }
+</script>
+
+<script>
+  // Remember an explicit language choice so the English page doesn't prompt again.
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a[hreflang]');
+    if (!a) return;
+    try { localStorage.setItem('ratioc.lang.choice', a.getAttribute('hreflang')); } catch (err) {}
+  });
 </script>
 
 </body>
