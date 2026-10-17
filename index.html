@@ -718,6 +718,15 @@
     transition: color 0.15s ease;
   }
   .lp-stay:hover { color: var(--text); }
+
+  /* ---------- FORM FIELD VALIDATION ---------- */
+  .field-error {
+    font-size: 13px;
+    color: var(--accent);
+    margin-top: 6px;
+  }
+  .field-error:empty { display: none; }
+  .field input[aria-invalid="true"] { border-color: var(--accent); }
 </style>
 <script>
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
@@ -1057,14 +1066,16 @@
         To change the destination, replace the action URL with a new /exec
         deployment URL.
       -->
-      <form class="contact-form" action="https://script.google.com/macros/s/AKfycbz6MLnHd-vjUmaTxcqafe_ZqLFzt4ldxxHA--I2lGrNOuOx6ZUDc1VkmqjQ3hwBDmPntw/exec" method="POST">
+      <form class="contact-form" action="https://script.google.com/macros/s/AKfycbz6MLnHd-vjUmaTxcqafe_ZqLFzt4ldxxHA--I2lGrNOuOx6ZUDc1VkmqjQ3hwBDmPntw/exec" method="POST" novalidate>
         <div class="field">
           <label for="cf-name">Name</label>
-          <input type="text" id="cf-name" name="name" placeholder="Your name" required>
+          <input type="text" id="cf-name" name="name" placeholder="Your name" required aria-describedby="cf-name-error">
+          <div class="field-error" id="cf-name-error" role="alert"></div>
         </div>
         <div class="field">
           <label for="cf-email">Work email</label>
-          <input type="email" id="cf-email" name="email" placeholder="you@firm.com" required>
+          <input type="email" id="cf-email" name="email" placeholder="you@firm.com" required aria-describedby="cf-email-error" autocomplete="email" spellcheck="false">
+          <div class="field-error" id="cf-email-error" role="alert"></div>
         </div>
         <div class="field">
           <label for="cf-message">Anything you'd like us to know <span style="text-transform:none;letter-spacing:0;">(optional)</span></label>
@@ -1201,6 +1212,66 @@
   // Contact form: posts to a Google Apps Script web app and keeps the visitor
   // on the page. Apps Script doesn't return CORS headers, so we send a "simple"
   // request (no custom headers, no preflight) and treat completion as success.
+  // ---- Form validation: inline messages instead of the browser's pop-ups ----
+  var FORM_MSG = {
+    name: 'Please enter your name.',
+    emailEmpty: 'Please enter your work email.',
+    emailInvalid: 'Please enter a valid email address, for example name@firm.com.'
+  };
+  // Unicode letters/digits where supported (so Arabic domains are accepted),
+  // with an ASCII fallback so an old browser can never break the whole script.
+  var EM_L = '\\p{L}\\p{M}\\p{N}', EM_LET = '\\p{L}\\p{M}', EM_FLAGS = 'u';
+  try { new RegExp('\\p{L}', 'u'); } catch (err) { EM_L = 'A-Za-z0-9'; EM_LET = 'A-Za-z'; EM_FLAGS = ''; }
+  var EMAIL_LOCAL = new RegExp("^[" + EM_L + "!#$%&'*+/=?^_`{|}~.-]+$", EM_FLAGS);
+  var EMAIL_LABEL = new RegExp("^[" + EM_L + "](?:[" + EM_L + "-]{0,61}[" + EM_L + "])?$", EM_FLAGS);
+  var EMAIL_TLD = new RegExp("^(?:[" + EM_LET + "]{2,}|xn--[a-z0-9-]{2,})$", 'i' + EM_FLAGS);
+
+  // Exactly one @, a sane local part, and a domain of valid labels ending in a
+  // real top-level domain (so "name@firm" and "name@firm." are rejected).
+  function isValidEmail(value) {
+    if (value.length < 6 || value.length > 254) return false;
+    var parts = value.split('@');
+    if (parts.length !== 2) return false;
+    var local = parts[0], labels = parts[1].split('.');
+    if (!local || local.length > 64 || !EMAIL_LOCAL.test(local)) return false;
+    if (local.charAt(0) === '.' || local.charAt(local.length - 1) === '.' || local.indexOf('..') !== -1) return false;
+    if (labels.length < 2) return false;
+    for (var i = 0; i < labels.length; i++) {
+      if (!EMAIL_LABEL.test(labels[i])) return false;
+    }
+    return EMAIL_TLD.test(labels[labels.length - 1]);
+  }
+
+  function setFieldError(input, message) {
+    var err = document.getElementById(input.id + '-error');
+    if (err) err.textContent = message || '';
+    if (message) input.setAttribute('aria-invalid', 'true');
+    else input.removeAttribute('aria-invalid');
+  }
+  function checkName(input) {
+    input.value = input.value.trim();
+    var ok = input.value !== '';
+    setFieldError(input, ok ? '' : FORM_MSG.name);
+    return ok;
+  }
+  function checkEmail(input) {
+    input.value = input.value.trim();
+    var message = '';
+    if (input.value === '') message = FORM_MSG.emailEmpty;
+    else if (!isValidEmail(input.value)) message = FORM_MSG.emailInvalid;
+    setFieldError(input, message);
+    return message === '';
+  }
+  function validateForm(formEl) {
+    var nameInput = formEl.querySelector('#cf-name');
+    var emailInput = formEl.querySelector('#cf-email');
+    var nameOk = checkName(nameInput);
+    var emailOk = checkEmail(emailInput);
+    if (!nameOk) nameInput.focus();
+    else if (!emailOk) emailInput.focus();
+    return nameOk && emailOk;
+  }
+
   var form = document.querySelector('.contact-form');
   var formLoadTime = Date.now();
   if (form) {
@@ -1215,6 +1286,9 @@
         showStatus('Thank you — we\u2019ll be in touch shortly.', true);
         return;
       }
+
+      // Validate before anything is sent; messages appear next to the fields.
+      if (!validateForm(form)) { showStatus('', true); return; }
 
       // Spam check 2 — timing: humans take a few seconds; bots submit instantly.
       if (Date.now() - formLoadTime < 3000) {
@@ -1251,6 +1325,16 @@
         btn.disabled = false;
       });
     });
+  }
+
+  // Clear a field's message as soon as the visitor starts fixing it; check the
+  // email when they leave the field (only once something has been typed).
+  if (form) {
+    var fName = form.querySelector('#cf-name');
+    var fEmail = form.querySelector('#cf-email');
+    fName.addEventListener('input', function () { if (fName.hasAttribute('aria-invalid')) setFieldError(fName, ''); });
+    fEmail.addEventListener('input', function () { if (fEmail.hasAttribute('aria-invalid')) setFieldError(fEmail, ''); });
+    fEmail.addEventListener('blur', function () { if (fEmail.value.trim() !== '') checkEmail(fEmail); });
   }
 
   function showStatus(msg, ok) {
