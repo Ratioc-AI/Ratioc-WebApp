@@ -11,10 +11,96 @@
 <link rel="alternate" hreflang="en" href="https://www.ratioc.ai/">
 <link rel="alternate" hreflang="ar" href="https://www.ratioc.ai/ar/">
 <link rel="alternate" hreflang="x-default" href="https://www.ratioc.ai/">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=Playfair+Display:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Arabic:wght@500&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#11161c">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Ratioc">
+<meta property="og:title" content="Ratioc | On-Premise AI Compliance">
+<meta property="og:description" content="On-premise AI platform that investigates conduct risk for regulated financial institutions.">
+<meta property="og:url" content="https://www.ratioc.ai/">
+<meta property="og:image" content="https://www.ratioc.ai/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Ratioc: AI that investigates, not just flags, and never leaves the building.">
+<meta property="og:locale" content="en_GB">
+<meta property="og:locale:alternate" content="ar_AR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@ratioc_ai">
+<meta name="twitter:title" content="Ratioc | On-Premise AI Compliance">
+<meta name="twitter:description" content="On-premise AI platform that investigates conduct risk for regulated financial institutions.">
+<meta name="twitter:image" content="https://www.ratioc.ai/og-image.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Ratioc",
+  "url": "https://www.ratioc.ai/",
+  "logo": "https://www.ratioc.ai/icon-512.png",
+  "description": "On-premise AI platform that investigates conduct risk for regulated financial institutions.",
+  "email": "access@ratioc.ai",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "London",
+    "addressCountry": "GB"
+  },
+  "sameAs": [
+    "https://www.linkedin.com/company/ratiocai/",
+    "https://x.com/ratioc_ai"
+  ]
+}
+</script>
+<link rel="preload" href="/fonts/playfair-display-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/source-serif-4-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/ibm-plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
 <style>
+  @font-face {
+    font-family: 'IBM Plex Mono';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/fonts/ibm-plex-mono-latin-400.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+  @font-face {
+    font-family: 'IBM Plex Mono';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('/fonts/ibm-plex-mono-latin-500.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+  @font-face {
+    font-family: 'IBM Plex Sans';
+    font-style: normal;
+    font-weight: 400 600;
+    font-display: swap;
+    src: url('/fonts/ibm-plex-sans-latin.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+  @font-face {
+    font-family: 'IBM Plex Sans Arabic';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('/fonts/ibm-plex-sans-arabic-arabic-500.woff2') format('woff2');
+    unicode-range: U+0600-06FF, U+0750-077F, U+0870-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC7, U+10EC9-10EEE, U+10EF0-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;
+  }
+  @font-face {
+    font-family: 'Playfair Display';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('/fonts/playfair-display-latin-700.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+  @font-face {
+    font-family: 'Source Serif 4';
+    font-style: normal;
+    font-weight: 400 600;
+    font-display: swap;
+    src: url('/fonts/source-serif-4-latin.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
   :root {
     --bg: #11161c;
     --bg-raised: #171e26;
@@ -22,7 +108,7 @@
     --border: #2a333d;
     --text: #e9e5da;
     --text-dim: #95a0ac;
-    --text-faint: #5e6873;
+    --text-faint: #838e9a;
     --accent: #cf8a52;
     --accent-soft: rgba(207, 138, 82, 0.12);
     --green: #7fae8a;
@@ -546,8 +632,6 @@
     section { padding: 56px 0; }
   }
 </style>
-<link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
-<script src="https://assets.calendly.com/assets/external/widget.js" async></script>
 <script>
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
 </script>
@@ -897,8 +981,8 @@
         <button type="submit" class="form-submit">Enquire about the programme</button>
         <div class="form-status" id="cf-status" role="status" aria-live="polite"></div>
         <p class="form-note">
-          We'll only use your details to respond to your enquiry. Nothing is shared
-          with third parties. See our <a href="#privacy">privacy note</a>.
+          We'll only use your details to respond to your enquiry. See our
+          <a href="#privacy">privacy note</a> for how they're handled.
         </p>
       </form>
     </div>
@@ -909,12 +993,7 @@
     <div class="wrap">
       <div class="eyebrow" style="margin-bottom: 16px;">Privacy</div>
       <p class="body-text" style="font-size: 14px; max-width: 920px;">
-        When you contact us through this site, we collect your name, email
-        address, and any message you choose to send, solely to respond to your
-        enquiry and discuss the design partner programme. We do not sell or share
-        this information with third parties, and we do not use it for marketing
-        unrelated to your enquiry. You can ask us to delete your details at any
-        time by emailing <a href="mailto:access@ratioc.ai" data-umami-event="email-click" style="color:var(--accent);text-decoration:none;">access@ratioc.ai</a>.
+        When you contact us through this site, we collect your name, email address, and any message you choose to send, solely to respond to your enquiry and discuss the design partner programme. We do not sell this information or use it for marketing unrelated to your enquiry. To run the site and handle enquiries we use a small number of service providers that process data on our behalf: Google (Apps Script and Sheets, which receive and store enquiries), Vercel (hosting and site analytics), Umami (site analytics) and, if you choose to book a briefing, Calendly (which handles the details you enter there under its own privacy policy). You can ask us to delete your details at any time by emailing <a href="mailto:access@ratioc.ai" data-umami-event="email-click" style="color:var(--accent);text-decoration:none;">access@ratioc.ai</a>.
       </p>
     </div>
   </section>
@@ -929,21 +1008,55 @@
       <span>London, UK</span>
       <span class="sep">·</span>
       <a href="mailto:access@ratioc.ai" data-umami-event="email-click">access@ratioc.ai</a>
+      <span class="sep">·</span>
+      <a href="https://www.linkedin.com/company/ratiocai/" target="_blank" rel="noopener" data-umami-event="social-click" data-umami-event-network="linkedin">LinkedIn</a>
+      <span class="sep">·</span>
+      <a href="https://x.com/ratioc_ai" target="_blank" rel="noopener" data-umami-event="social-click" data-umami-event-network="x">X</a>
     </div>
   </div>
 </footer>
 
 <script>
-  // Open Calendly in a popup overlay when the widget is available; otherwise
-  // fall through to opening the booking page directly (the href).
+  // Calendly is loaded only when a visitor asks to book, so no third-party
+  // request is made on page load. If it can't load, the booking page opens
+  // directly instead.
+  var calendlyPromise = null;
+  function loadCalendly() {
+    if (window.Calendly && typeof window.Calendly.initPopupWidget === 'function') {
+      return Promise.resolve();
+    }
+    if (!calendlyPromise) {
+      calendlyPromise = new Promise(function (resolve, reject) {
+        var css = document.createElement('link');
+        css.rel = 'stylesheet';
+        css.href = 'https://assets.calendly.com/assets/external/widget.css';
+        document.head.appendChild(css);
+        var js = document.createElement('script');
+        js.src = 'https://assets.calendly.com/assets/external/widget.js';
+        js.async = true;
+        js.onload = resolve;
+        js.onerror = reject;
+        document.head.appendChild(js);
+      });
+      calendlyPromise.catch(function () { calendlyPromise = null; });
+    }
+    return calendlyPromise;
+  }
   document.addEventListener('click', function (e) {
     var cal = e.target.closest('a[data-calendly="true"]');
     if (!cal) return;
-    if (window.Calendly && typeof window.Calendly.initPopupWidget === 'function') {
-      e.preventDefault();
-      window.Calendly.initPopupWidget({ url: cal.getAttribute('href') });
-    }
-    // If Calendly hasn't loaded, do nothing special — the link opens normally.
+    // Leave modified clicks (open in new tab, etc.) to the browser.
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    e.preventDefault();
+    var url = cal.getAttribute('href');
+    loadCalendly().then(function () {
+      window.Calendly.initPopupWidget({ url: url });
+    }).catch(function () {
+      // Not 'noopener' in the features string: that makes window.open return
+      // null even when the tab opens, which would trigger the fallback too.
+      var w = window.open(url, '_blank');
+      if (w) { w.opener = null; } else { window.location.href = url; }
+    });
   });
 
   // Handle in-page anchor links: scroll within the page rather than letting
